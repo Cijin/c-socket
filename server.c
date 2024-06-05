@@ -5,6 +5,35 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+// TLV
+
+typedef enum { PROTO_TLV } proto_type_e;
+
+typedef struct {
+  proto_type_e type;
+  unsigned short len;
+} proto_hdr_t;
+
+void handle_client(int fd) {
+  unsigned short headerlen = sizeof(int);
+  char buf[4096] = {0};
+  proto_hdr_t *hdr = (proto_hdr_t *)buf;
+
+  hdr->type = htonl(PROTO_TLV);
+  hdr->len = htons(headerlen);
+
+  int *data = (int *)&hdr[1];
+  *data = htonl(1);
+
+  if (write(fd, hdr, sizeof(proto_hdr_t) + headerlen) == -1) {
+    perror("write");
+
+    return;
+  }
+
+  return;
+}
+
 int main(int argc, char *argv[]) {
   struct sockaddr_in serverInfo = {0};
 
@@ -35,14 +64,19 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  if (accept(sfd, (struct sockaddr *)&clientInfo, &clientAddrLen) == -1) {
-    perror("accept");
-    close(sfd);
+  while (1) {
+    int cfd = accept(sfd, (struct sockaddr *)&clientInfo, &clientAddrLen);
+    if (cfd == -1) {
+      perror("accept");
+      close(sfd);
 
-    return -1;
+      return -1;
+    }
+
+    handle_client(cfd);
+    close(cfd);
   }
 
   close(sfd);
-
   return 0;
 }
