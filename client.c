@@ -11,6 +11,9 @@ int main(int argc, char *argv[]) {
   serverInfo.sin_addr.s_addr = INADDR_ANY;
   serverInfo.sin_port = htons(8080);
 
+  struct sockaddr_in clientInfo = {0};
+  socklen_t clientAddrLen = sizeof(clientInfo);
+
   int sfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sfd == -1) {
     perror("socket");
@@ -30,8 +33,15 @@ int main(int argc, char *argv[]) {
 
     return -1;
   }
-  // accept
-  // close
+
+  if (accept(sfd, (struct sockaddr *)&clientInfo, &clientAddrLen) == -1) {
+    perror("accept");
+    close(sfd);
+
+    return -1;
+  }
+
+  close(sfd);
 
   return 0;
 }
