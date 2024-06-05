@@ -7,6 +7,7 @@
 
 int main(int argc, char *argv[]) {
   struct sockaddr_in serverInfo = {0};
+
   serverInfo.sin_family = AF_INET;
   serverInfo.sin_addr.s_addr = INADDR_ANY;
   serverInfo.sin_port = htons(8080);
