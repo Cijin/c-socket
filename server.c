@@ -26,7 +26,6 @@ void handle_client(int fd) {
 
   if (write(fd, hdr, sizeof(proto_hdr_t) + headerlen) == -1) {
     perror("write");
-
     return;
   }
 
