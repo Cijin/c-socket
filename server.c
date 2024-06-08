@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 // TLV
-
 typedef enum { PROTO_TLV } proto_type_e;
 
 typedef struct {
